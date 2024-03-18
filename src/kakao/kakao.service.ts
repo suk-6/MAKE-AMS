@@ -121,7 +121,7 @@ export class KakaoService {
                         {
                             type: 'button',
                             text: '발급하기',
-                            style: 'primary',
+                            style: 'default',
                             action: {
                                 type: 'submit_action',
                                 name: 'generation',
