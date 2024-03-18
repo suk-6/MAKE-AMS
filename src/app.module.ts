@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { KakaoModule } from './kakao/kakao.module';
 import { ConfigModule } from '@nestjs/config';
 import { CodeModule } from './code/code.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { CodeModule } from './code/code.module';
         PrismaModule,
         KakaoModule,
         CodeModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [AppService],
