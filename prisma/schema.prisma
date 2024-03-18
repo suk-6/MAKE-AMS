@@ -14,10 +14,21 @@ datasource db {
 }
 
 model accessCode {
-  code      String   @id
+  code      String      @id
   id        String
   name      String
-  expired   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  expired   Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  accessLog accessLog[]
+}
+
+model accessLog {
+  lid        Int        @id @default(autoincrement())
+  code       String
+  accessCode accessCode @relation(fields: [code], references: [code])
+  id         String
+  name       String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }

@@ -46,6 +46,39 @@ export class KakaoService {
             .filter((id: number) => id === 10203314);
     }
 
+    public async sendCode(userID: number, code: string) {
+        const res = await fetch(`${KakaoService.baseURL}/messages.send`, {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify({
+                conversation_id: await this.getConversation(userID),
+                text: `새로운 QR 코드가 발급되었습니다.`,
+                blocks: [
+                    {
+                        type: 'header',
+                        text: '메이커스페이스 출입관리 시스템',
+                        style: 'blue',
+                    },
+                    {
+                        type: 'text',
+                        text: '새로운 QR 코드가 발급되었습니다.',
+                    },
+                    {
+                        type: 'button',
+                        text: '표시하기',
+                        style: 'default',
+                        action: {
+                            type: 'open_system_browser',
+                            name: 'open',
+                            value: `https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=${code}`,
+                        },
+                    },
+                ],
+            }),
+        });
+        if (!res.ok) throw new Error('Failed to send code');
+    }
+
     public async getConversation(userID: number) {
         const res = await fetch(`${KakaoService.baseURL}/conversations.open`, {
             method: 'POST',
@@ -79,7 +112,7 @@ export class KakaoService {
                         {
                             type: 'header',
                             text: '메이커스페이스 출입관리 시스템',
-                            style: 'white',
+                            style: 'blue',
                         },
                         {
                             type: 'text',

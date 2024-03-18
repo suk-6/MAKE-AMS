@@ -13,7 +13,10 @@ export class KakaoController {
     @Post('callback')
     @HttpCode(200)
     async kakaoCallback(@Body() body: KakaoCallbackModel) {
-        await this.kakaoService.getUser(body.react_user_id);
-        // .then((user) => this.authService.genCode(user));
+        const code = await this.kakaoService
+            .getUser(body.react_user_id)
+            .then((user) => this.authService.genCode(user));
+
+        this.kakaoService.sendCode(body.react_user_id, code);
     }
 }
