@@ -72,9 +72,9 @@ export const kakaoBlocks = {
                     text: '열기',
                     style: 'primary',
                     action: {
-                        type: 'open_system_browser',
-                        name: 'button1',
-                        value: 'http://example.com/details/999',
+                        type: 'submit_action',
+                        name: 'doorSettings',
+                        value: 'activateDoor',
                     },
                 },
                 {
@@ -82,9 +82,9 @@ export const kakaoBlocks = {
                     text: '잠그기',
                     style: 'danger',
                     action: {
-                        type: 'open_system_browser',
-                        name: 'button1',
-                        value: 'http://example.com/details/999',
+                        type: 'submit_action',
+                        name: 'doorSettings',
+                        value: 'deactivateDoor',
                     },
                 },
             ],
@@ -94,9 +94,8 @@ export const kakaoBlocks = {
             text: '출입기록 확인하기',
             style: 'default',
             action: {
-                type: 'open_system_browser',
-                name: 'button1',
-                value: 'http://example.com/details/999',
+                type: 'open_inapp_browser',
+                value: `${process.env.SERVER_URL}/auth/logs`,
             },
         },
         {
@@ -104,9 +103,8 @@ export const kakaoBlocks = {
             text: 'QR 발급 메세지 전송하기',
             style: 'default',
             action: {
-                type: 'open_system_browser',
-                name: 'button1',
-                value: 'http://example.com/details/999',
+                type: 'call_modal',
+                value: 'qr_management',
             },
         },
     ],

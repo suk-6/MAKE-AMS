@@ -6,6 +6,7 @@ import {
     checkUserDictDecorator,
     checkUserInDictDecorator,
 } from './kakao.decorator';
+import { KakaoModals } from './kakao.modals';
 
 @Injectable()
 export class KakaoService {
@@ -109,5 +110,9 @@ export class KakaoService {
             text: '관리자 메뉴',
             blocks: kakaoBlocks.adminMenu,
         });
+    }
+
+    public async resQRManagementModal() {
+        return KakaoModals.sendQRMessage('qr_modal');
     }
 }

@@ -22,14 +22,25 @@ export interface KakaoUserModel {
 export interface KakaoCallbackModel {
     type: string;
     action_time: string;
+    actions?: object;
     message: {
-        blocks: object[];
-        conversation_id: number;
         id: number;
         text: string;
         user_id: number;
+        conversation_id: number;
+        send_time?: string;
+        update_time?: string;
+        blocks?: object[];
     };
     react_user_id: number;
-    action_name: string;
+    action_name?: string;
     value: string;
+}
+
+export interface KakaoModalModel {
+    type: string;
+    value: string;
+    action_time: string;
+    message: object;
+    react_user_id: number;
 }
