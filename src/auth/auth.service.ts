@@ -7,23 +7,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AuthService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async checkAdmin(id: number) {
-        // const user = await this.prisma.admin.findUnique({
-        //     where: {
-        //         id,
-        //     },
-        // });
-
-        // if (user) return true;
-        // return false;
-
-        if (id === 10203314) {
-            return true;
-        }
-
-        return false;
-    }
-
     async accessByCode(code: string) {
         const user = await this.verifyCode(code);
         if (!user) throw new BadRequestException('Invalid code');
