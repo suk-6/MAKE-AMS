@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
+import { kakaoBlocks } from './kakao.blocks';
 
 @Injectable()
 export class KakaoService {
@@ -12,33 +13,36 @@ export class KakaoService {
     };
     public userDict = {};
 
-    public async getUser(userID: number) {
-        const res = await fetch(
-            `${KakaoService.baseURL}/users.info?user_id=${userID}`,
-            {
-                method: 'GET',
-                headers: this.headers,
-            },
-        );
-        if (!res.ok) throw new Error('Failed to fetch user info');
+    private async sendGET(params: string) {
+        const res = await fetch(`${KakaoService.baseURL}/${params}`, {
+            method: 'POST',
+            headers: this.headers,
+        });
+        if (!res.ok) throw new Error('Failed to send GET request');
 
-        const data = await res.json();
+        return res.json();
+    }
+
+    private async sendPOST(params: string, body: any) {
+        const res = await fetch(`${KakaoService.baseURL}/${params}`, {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error('Failed to send POST request');
+
+        return res.json();
+    }
+
+    public async getUser(userID: number) {
+        const data = await this.sendGET(`users.info?user_id=${userID}`);
         if (!data.success) throw new Error('Failed to fetch user info');
 
         return data.user;
     }
 
     public async getUserIDAll() {
-        const res = await fetch(
-            `${KakaoService.baseURL}/users.list?limit=100`,
-            {
-                method: 'GET',
-                headers: this.headers,
-            },
-        );
-        if (!res.ok) throw new Error('Failed to fetch user list');
-
-        const data = await res.json();
+        const data = await this.sendGET(`users.list?limit=100`);
         if (!data.success) throw new Error('Failed to fetch user list');
 
         return data.users
@@ -53,59 +57,18 @@ export class KakaoService {
         const body = {
             conversation_id: await this.getConversation(userID),
             text: `새로운 QR 코드가 발급되었습니다.`,
-            blocks: [
-                {
-                    type: 'header',
-                    text: '메이커스페이스 출입관리 시스템',
-                    style: 'blue',
-                },
-                {
-                    type: 'text',
-                    text: '새로운 QR 코드가 발급되었습니다.',
-                },
-                {
-                    type: 'button',
-                    text: '표시하기',
-                    style: 'default',
-                    action: {
-                        type: 'open_system_browser',
-                        name: 'open',
-                        value: `https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl=${code}`,
-                    },
-                },
-            ],
+            blocks: kakaoBlocks.viewQR(code),
         };
 
-        if (await this.authService.checkAdmin(userID)) {
-            body.blocks.push({
-                type: 'button',
-                text: '관리자 메뉴',
-                style: 'default',
-                action: {
-                    type: 'submit_action',
-                    name: 'show_admin_menu',
-                    value: `user_id=${userID}`,
-                },
-            });
-        }
+        if (await this.authService.checkAdmin(userID))
+            body.blocks.push(kakaoBlocks.adminButton(userID.toString()));
 
-        const res = await fetch(`${KakaoService.baseURL}/messages.send`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify(body),
-        });
-        if (!res.ok) throw new Error('Failed to send code');
+        this.sendPOST('messages.send', body);
     }
 
     public async getConversation(userID: number) {
-        const res = await fetch(`${KakaoService.baseURL}/conversations.open`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({ user_id: userID }),
-        });
-        if (!res.ok) throw new Error('Failed to open conversation');
-
-        const data = await res.json();
+        const body = { user_id: userID };
+        const data = await this.sendPOST('conversations.open', body);
         if (!data.success) throw new Error('Failed to open conversation');
 
         return data.conversation.id;
@@ -120,105 +83,20 @@ export class KakaoService {
 
     public async generationMessageAll() {
         for (const userID of Object.keys(this.userDict)) {
-            fetch(`${KakaoService.baseURL}/messages.send`, {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify({
-                    conversation_id: this.userDict[userID],
-                    text: '메이커스페이스 출입 QR을 발급받으세요.',
-                    blocks: [
-                        {
-                            type: 'header',
-                            text: '메이커스페이스 출입관리 시스템',
-                            style: 'blue',
-                        },
-                        {
-                            type: 'text',
-                            text: '아래 버튼을 눌러 메이커스페이스 출입 QR을 발급받으세요.',
-                        },
-                        {
-                            type: 'button',
-                            text: '발급하기',
-                            style: 'default',
-                            action: {
-                                type: 'submit_action',
-                                name: 'generation',
-                                value: `user_id=${userID}`,
-                            },
-                        },
-                    ],
-                }),
+            this.sendPOST('messages.send', {
+                conversation_id: this.userDict[userID],
+                text: '메이커스페이스 출입 QR을 발급받으세요.',
+                blocks: kakaoBlocks.sendQR(userID),
             });
         }
     }
 
     public async sendAdminMenu(userID: number) {
-        const res = await fetch(`${KakaoService.baseURL}/messages.send`, {
-            method: 'POST',
-            headers: this.headers,
-            body: JSON.stringify({
-                conversation_id: this.userDict[userID],
-                text: '관리자 메뉴',
-                blocks: [
-                    {
-                        type: 'header',
-                        text: '메이커스페이스 출입관리 관리자',
-                        style: 'blue',
-                    },
-                    {
-                        type: 'text',
-                        text: '메뉴를 선택해주세요.',
-                    },
-                    {
-                        type: 'action',
-                        elements: [
-                            {
-                                type: 'button',
-                                text: '열기',
-                                style: 'primary',
-                                action: {
-                                    type: 'open_system_browser',
-                                    name: 'button1',
-                                    value: 'http://example.com/details/999',
-                                },
-                            },
-                            {
-                                type: 'button',
-                                text: '잠그기',
-                                style: 'danger',
-                                action: {
-                                    type: 'open_system_browser',
-                                    name: 'button1',
-                                    value: 'http://example.com/details/999',
-                                },
-                            },
-                        ],
-                    },
-                    {
-                        type: 'button',
-                        text: '출입기록 확인하기',
-                        style: 'default',
-                        action: {
-                            type: 'open_system_browser',
-                            name: 'button1',
-                            value: 'http://example.com/details/999',
-                        },
-                    },
-                    {
-                        type: 'button',
-                        text: 'QR 발급 메세지 전송하기',
-                        style: 'default',
-                        action: {
-                            type: 'open_system_browser',
-                            name: 'button1',
-                            value: 'http://example.com/details/999',
-                        },
-                    },
-                ],
-            }),
+        this.sendPOST('messages.send', {
+            conversation_id: this.userDict[userID],
+            text: '관리자 메뉴',
+            blocks: kakaoBlocks.adminMenu,
         });
-
-        if (!res.ok) throw new Error('Failed to send admin menu');
     }
 }
 
