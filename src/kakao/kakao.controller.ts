@@ -20,7 +20,11 @@ export class KakaoController {
 
             this.kakaoService.sendCode(body.react_user_id, code);
         } else if (body.action_name === 'open_admin_menu') {
-            this.kakaoService.getUser(body.react_user_id).then((user) => {});
+            this.kakaoService.getUser(body.react_user_id).then((user) => {
+                const id = parseInt(user.id);
+                if (this.authService.checkAdmin(id))
+                    this.kakaoService.sendAdminMenu(id);
+            });
         }
     }
 }
