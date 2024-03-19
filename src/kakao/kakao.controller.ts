@@ -13,10 +13,14 @@ export class KakaoController {
     @Post('callback')
     @HttpCode(200)
     async kakaoCallback(@Body() body: KakaoCallbackModel) {
-        const code = await this.kakaoService
-            .getUser(body.react_user_id)
-            .then((user) => this.authService.genCode(user));
+        if (body.action_name === 'generation') {
+            const code = await this.kakaoService
+                .getUser(body.react_user_id)
+                .then((user) => this.authService.genCode(user));
 
-        this.kakaoService.sendCode(body.react_user_id, code);
+            this.kakaoService.sendCode(body.react_user_id, code);
+        } else if (body.action_name === 'open_admin_menu') {
+            this.kakaoService.getUser(body.react_user_id).then((user) => {});
+        }
     }
 }
