@@ -7,5 +7,6 @@ import { AuthModule } from 'src/auth/auth.module';
     imports: [AuthModule],
     controllers: [KakaoController],
     providers: [KakaoService],
+    exports: [KakaoService],
 })
 export class KakaoModule {}

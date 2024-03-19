@@ -22,7 +22,7 @@ export class KakaoController {
         } else if (body.action_name === 'open_admin_menu') {
             this.kakaoService.getUser(body.react_user_id).then((user) => {
                 const id = parseInt(user.id);
-                if (this.authService.checkAdmin(id))
+                if (user.position === '선생님' || user.position === '관리자')
                     this.kakaoService.sendAdminMenu(id);
             });
         }
