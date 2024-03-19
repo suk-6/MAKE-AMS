@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { kakaoBlocks } from './kakao.blocks';
+import { KakaoUserModel } from './kakao.interface';
 
 @Injectable()
 export class KakaoService {
@@ -10,7 +11,7 @@ export class KakaoService {
         // });
     }
 
-    private static baseURL = 'https://api.kakaowork.com/v1';
+    private static baseURL = process.env.KAKAOBOT_API_URL;
     private headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.KAKAOBOT_API_KEY}`,
@@ -38,14 +39,14 @@ export class KakaoService {
         return res.json();
     }
 
-    public async getUser(userID: number) {
+    public async getUser(userID: number): Promise<KakaoUserModel> {
         const data = await this.sendGET(`users.info?user_id=${userID}`);
         if (!data.success) throw new Error('Failed to fetch user info');
 
         return data.user;
     }
 
-    public async getUserIDAll() {
+    public async getUserIDAll(): Promise<number[]> {
         const data = await this.sendGET(`users.list?limit=100`);
         if (!data.success) throw new Error('Failed to fetch user list');
 
@@ -70,7 +71,7 @@ export class KakaoService {
         this.sendPOST('messages.send', body);
     }
 
-    public async getConversation(userID: number) {
+    public async getConversation(userID: number): Promise<number> {
         const body = { user_id: userID };
         const data = await this.sendPOST('conversations.open', body);
         if (!data.success) throw new Error('Failed to open conversation');
