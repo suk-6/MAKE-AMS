@@ -4,7 +4,11 @@ import { kakaoBlocks } from './kakao.blocks';
 
 @Injectable()
 export class KakaoService {
-    constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {
+        // this.createUserDict().then(() => {
+        //     this.generationMessageAll();
+        // });
+    }
 
     private static baseURL = 'https://api.kakaowork.com/v1';
     private headers = {
@@ -15,7 +19,7 @@ export class KakaoService {
 
     private async sendGET(params: string) {
         const res = await fetch(`${KakaoService.baseURL}/${params}`, {
-            method: 'POST',
+            method: 'GET',
             headers: this.headers,
         });
         if (!res.ok) throw new Error('Failed to send GET request');
@@ -99,10 +103,3 @@ export class KakaoService {
         });
     }
 }
-
-// (() => {
-//     const kakaoService = new KakaoService();
-//     kakaoService.createUserDict().then(() => {
-//         kakaoService.generationMessageAll();
-//     });
-// })();
