@@ -1,25 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
 import { kakaoBlocks } from './kakao.blocks';
 import { KakaoUserModel } from './kakao.interface';
+import {
+    checkAdminByIDDecorator,
+    checkUserDictDecorator,
+    checkUserInDictDecorator,
+} from './kakao.decorator';
 
 @Injectable()
 export class KakaoService {
-    constructor(private readonly authService: AuthService) {
-        // this.createUserDict().then(() => {
-        //     this.generationMessageAll();
-        // });
-    }
+    constructor() {}
 
-    private static baseURL = process.env.KAKAOBOT_API_URL;
     private headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.KAKAOBOT_API_KEY}`,
     };
-    public userDict = {};
+    public userDict: object = {};
 
     private async sendGET(params: string) {
-        const res = await fetch(`${KakaoService.baseURL}/${params}`, {
+        const res = await fetch(`${process.env.KAKAOBOT_API_URL}/${params}`, {
             method: 'GET',
             headers: this.headers,
         });
@@ -29,7 +28,7 @@ export class KakaoService {
     }
 
     private async sendPOST(params: string, body: any) {
-        const res = await fetch(`${KakaoService.baseURL}/${params}`, {
+        const res = await fetch(`${process.env.KAKAOBOT_API_URL}/${params}`, {
             method: 'POST',
             headers: this.headers,
             body: JSON.stringify(body),
@@ -65,10 +64,15 @@ export class KakaoService {
             blocks: kakaoBlocks.viewQR(code),
         };
 
-        if (await this.authService.checkAdmin(userID))
+        if (await this.checkAdminByID(userID))
             body.blocks.push(kakaoBlocks.adminButton(userID.toString()));
 
         this.sendPOST('messages.send', body);
+    }
+
+    public async checkAdminByID(userID: number): Promise<boolean> {
+        const user = await this.getUser(userID);
+        return user.position === '선생님' || user.position === '관리자';
     }
 
     public async getConversation(userID: number): Promise<number> {
@@ -86,6 +90,7 @@ export class KakaoService {
         }
     }
 
+    @checkUserDictDecorator
     public async generationMessageAll() {
         for (const userID of Object.keys(this.userDict)) {
             this.sendPOST('messages.send', {
@@ -96,8 +101,10 @@ export class KakaoService {
         }
     }
 
+    @checkAdminByIDDecorator
+    @checkUserInDictDecorator
     public async sendAdminMenu(userID: number) {
-        this.sendPOST('messages.send', {
+        await this.sendPOST('messages.send', {
             conversation_id: this.userDict[userID],
             text: '관리자 메뉴',
             blocks: kakaoBlocks.adminMenu,
