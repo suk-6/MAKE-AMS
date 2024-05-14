@@ -25,8 +25,15 @@ export class AuthService {
     }
 
     async registerUser(user: registerUserDto) {
+        if (!user.id || !user.password || !user.name || !user.studentId)
+            throw new BadRequestException('Invalid data');
+
+        if (await this.getUserById(user.id)) {
+            throw new BadRequestException('이미 회원가입 된 유저입니다.');
+        }
+
         const hashed = await hash(user.password, 10);
-        return this.prisma.user.create({
+        const result = await this.prisma.user.create({
             data: {
                 id: user.id,
                 name: user.name,
@@ -34,6 +41,9 @@ export class AuthService {
                 studentId: user.studentId,
             },
         });
+
+        if (!result) throw new BadRequestException('회원가입 실패');
+        return { status: true };
     }
 
     async loginUser(id: string, password: string) {
@@ -47,7 +57,15 @@ export class AuthService {
         const isValid = await compare(password, user.password);
         if (!isValid) throw new UnauthorizedException('Invalid password');
 
-        return user;
+        const result: UserModel = {
+            id: user.id,
+            name: user.name,
+            studentId: user.studentId,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
+
+        return result;
     }
 
     async getUserById(id: string) {
@@ -66,8 +84,8 @@ export class AuthService {
             },
         });
 
-        if (accessCode.userId) return accessCode.userId;
-        return null;
+        if (accessCode.userId === null) return null;
+        return accessCode.userId;
     }
 
     async loggingUser(user: UserModel, code: string) {
@@ -86,7 +104,7 @@ export class AuthService {
         await this.expireBeforeCode(user);
         this.saveCode(user, code);
 
-        return code;
+        return { status: true, code };
     }
 
     async saveCode(user: UserModel, code: string) {
