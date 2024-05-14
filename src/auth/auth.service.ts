@@ -100,7 +100,7 @@ export class AuthService {
     }
 
     async genCode(user: UserModel) {
-        const code = randomBytes(16).toString('hex');
+        const code = randomBytes(32).toString('hex');
         await this.expireBeforeCode(user);
         this.saveCode(user, code);
 
