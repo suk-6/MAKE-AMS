@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { PrismaModule } from './prisma/prisma.module';
-import { KakaoModule } from './kakao/kakao.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -13,7 +12,6 @@ import { AuthModule } from './auth/auth.module';
             envFilePath: `.env.${process.env.NODE_ENV || 'local'}`,
         }),
         PrismaModule,
-        KakaoModule,
         AuthModule,
     ],
     controllers: [AppController],

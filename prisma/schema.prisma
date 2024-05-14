@@ -13,10 +13,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  id         String       @id
+  name       String
+  password   String
+  studentId  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  accessCode accessCode[]
+  accessLog  accessLog[]
+}
+
 model accessCode {
   code      String      @id
-  id        String
-  name      String
+  userId    String
+  user      user        @relation(fields: [userId], references: [id])
   expired   Boolean     @default(false)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -26,9 +37,9 @@ model accessCode {
 model accessLog {
   lid        Int        @id @default(autoincrement())
   code       String
+  userId     String
   accessCode accessCode @relation(fields: [code], references: [code])
-  id         String
-  name       String
+  user       user       @relation(fields: [userId], references: [id])
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
 }
