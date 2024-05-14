@@ -1,8 +1,16 @@
 version: '3'
 services:
+  app:
+    build: .
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - "3001:3001"
   postgres:
     image: postgres:16.2-alpine
     env_file:
-      - .env.db
+      - .env
     ports:
       - "5432:5432"
+    restart: always
