@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 LABEL maintainer="https://suk.kr"
 
@@ -9,9 +9,11 @@ WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install --production
+RUN yarn install --frozen-lockfile
 
 COPY . .
+
+RUN /app/node_modules/.bin/prisma generate
 
 RUN yarn run build
 
