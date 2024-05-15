@@ -39,4 +39,10 @@ export class AuthController {
         if (!code) throw new BadRequestException('Code is required');
         return this.authService.checkAdmin(code);
     }
+
+    @Get('check')
+    async check(@Query('code') code: string) {
+        if (!code) throw new BadRequestException('Code is required');
+        return this.authService.checkCode(code);
+    }
 }

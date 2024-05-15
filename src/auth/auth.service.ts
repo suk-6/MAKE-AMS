@@ -150,4 +150,16 @@ export class AuthService {
             })
             .then((res) => console.log('Expired Code: ', res));
     }
+
+    async checkCode(code: string) {
+        const accessCode = await this.prisma.accessCode.findUnique({
+            where: {
+                code,
+                expired: false,
+            },
+        });
+
+        if (accessCode === null) return { status: false };
+        return { status: true };
+    }
 }
