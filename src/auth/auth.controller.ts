@@ -33,4 +33,10 @@ export class AuthController {
     async register(@Body() registerDto: registerUserDto) {
         return await this.authService.registerUser(registerDto);
     }
+
+    @Get('admin')
+    async checkAdmin(@Query('code') code: string) {
+        if (!code) throw new BadRequestException('Code is required');
+        return this.authService.checkAdmin(code);
+    }
 }
