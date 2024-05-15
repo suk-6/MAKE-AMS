@@ -14,7 +14,7 @@ export class AuthService {
     constructor(private readonly prisma: PrismaService) {}
 
     async accessByCode(code: string) {
-        const userId = await this.verifyCode(code);
+        const userId = await this.getUserIdByCode(code);
         if (!userId) throw new BadRequestException('Invalid code');
         const user = await this.getUserById(userId);
         if (!user) throw new UnauthorizedException('Invalid code');
@@ -57,6 +57,10 @@ export class AuthService {
         const isValid = await compare(password, user.password);
         if (!isValid) throw new UnauthorizedException('Invalid password');
 
+        const isApproved = user.isApproved;
+        if (!isApproved)
+            throw new UnauthorizedException('관리자의 승인이 필요합니다.');
+
         const result: UserModel = {
             id: user.id,
             name: user.name,
@@ -76,7 +80,7 @@ export class AuthService {
         });
     }
 
-    async verifyCode(code: string) {
+    async getUserIdByCode(code: string) {
         const accessCode = await this.prisma.accessCode.findUnique({
             where: {
                 code,
@@ -84,8 +88,40 @@ export class AuthService {
             },
         });
 
-        if (accessCode.userId === null) return null;
+        if (accessCode === null) return null;
         return accessCode.userId;
+    }
+
+    async checkAdmin(code: string) {
+        const userId = await this.getUserIdByCode(code);
+        if (!userId) throw new BadRequestException('Invalid code');
+        const user = await this.getUserById(userId);
+        if (!user) throw new UnauthorizedException('Invalid code');
+
+        if (user.isAdmin === true) {
+            return { status: true };
+        }
+
+        return { status: false };
+    }
+
+    async approveUser(code: string, userId: string) {
+        const admin = await this.checkAdmin(code);
+        if (!admin) throw new UnauthorizedException('Not Admin');
+
+        const user = await this.getUserById(userId);
+        if (!user) throw new BadRequestException('Invalid User');
+
+        await this.prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                isApproved: true,
+            },
+        });
+
+        return { status: true };
     }
 
     async loggingUser(user: UserModel, code: string) {
