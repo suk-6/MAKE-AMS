@@ -93,9 +93,6 @@ export class AuthService {
     }
 
     async checkAdmin(code: string) {
-        // test
-        if (code === 'test') return { status: true };
-
         const userId = await this.getUserIdByCode(code);
         if (!userId) throw new BadRequestException('Invalid code');
         const user = await this.getUserById(userId);
@@ -106,6 +103,19 @@ export class AuthService {
         }
 
         return { status: false };
+    }
+
+    async updateAdmin(userId: string, code: string) {
+        if (code === process.env.ADMIN_CODE) {
+            return await this.prisma.user.update({
+                where: {
+                    id: userId,
+                },
+                data: {
+                    isAdmin: true,
+                },
+            });
+        }
     }
 
     async loggingUser(user: UserModel, code: string) {
