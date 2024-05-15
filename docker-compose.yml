@@ -6,7 +6,7 @@ services:
       - .env
     restart: always
     ports:
-      - "3001:3001"
+      - "9026:3001"
   postgres:
     image: postgres:16.2-alpine
     env_file:
