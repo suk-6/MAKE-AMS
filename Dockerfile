@@ -11,9 +11,11 @@ COPY yarn.lock ./
 
 RUN yarn install --frozen-lockfile
 
+COPY prisma ./prisma/
+
 COPY . .
 
-RUN /app/node_modules/.bin/prisma generate
+RUN npx prisma generate 
 
 RUN yarn run build
 
