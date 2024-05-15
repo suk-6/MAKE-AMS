@@ -46,7 +46,7 @@ export class AuthController {
         return this.authService.checkCode(code);
     }
 
-    @Get('set-admin')
+    @Get('setadmin')
     async setAdmin(@Query('id') id: string, @Query('code') code: string) {
         if (!code) throw new BadRequestException('Code is required');
         return this.authService.updateAdmin(id, code);
