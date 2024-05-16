@@ -118,7 +118,7 @@ export class AuthService {
     }
 
     async updateAdmin(userId: string, code: string) {
-        if (code === process.env.ADMIN_KEY) {
+        if (code === process.env.ADMIN_KEY || (await this.checkAdmin(code))) {
             return await this.prisma.user.update({
                 where: {
                     id: userId,
