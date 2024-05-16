@@ -8,6 +8,7 @@ import { randomBytes } from 'crypto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserModel } from './auth.models';
 import { registerUserDto } from './auth.dto';
+import { DoorStatus } from 'src/misc/doorStatus';
 
 @Injectable()
 export class AuthService {
@@ -19,9 +20,19 @@ export class AuthService {
         const user = await this.getUserById(userId);
         if (!user) throw new UnauthorizedException('Invalid code');
 
-        this.loggingUser(user, code);
+        if (DoorStatus.LOCKED) {
+            return false;
+        }
 
-        return true;
+        if (DoorStatus.RESTRICTED) {
+            this.loggingUser(user, code);
+            return true;
+        }
+
+        if (DoorStatus.UNLOCKED) {
+            this.loggingUser(user, code);
+            return true;
+        }
     }
 
     async registerUser(user: registerUserDto) {
