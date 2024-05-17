@@ -26,6 +26,10 @@ export class AuthService {
 
         switch (await this.doorService.getDoorStatus()) {
             case DoorStatus.LOCKED:
+                if (user.isAdmin) {
+                    this.loggingUser(user, code);
+                    return true;
+                }
                 return false;
             case DoorStatus.RESTRICTED:
                 this.loggingUser(user, code);
