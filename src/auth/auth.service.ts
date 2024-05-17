@@ -149,6 +149,22 @@ export class AuthService {
         return { status: true, code };
     }
 
+    async regenerateCode(code: string) {
+        const accessCode = await this.prisma.accessCode.findUnique({
+            where: {
+                code,
+                expired: false,
+            },
+        });
+
+        if (accessCode === null) return { status: false };
+
+        const user = await this.getUserById(accessCode.userId);
+        if (!user) throw new UnauthorizedException('Invalid code');
+
+        return this.genCode(user);
+    }
+
     async saveCode(user: UserModel, code: string) {
         this.prisma.accessCode
             .create({
