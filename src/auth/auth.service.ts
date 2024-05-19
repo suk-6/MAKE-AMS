@@ -204,4 +204,30 @@ export class AuthService {
         if (accessCode === null) return { status: false };
         return { status: true };
     }
+
+    async recentAccess(code: string) {
+        const accessCode = await this.prisma.accessCode.findUnique({
+            where: {
+                code,
+                expired: false,
+            },
+        });
+
+        if (accessCode === null) return { status: false };
+
+        const user = await this.getUserById(accessCode.userId);
+        if (!user) throw new UnauthorizedException('Invalid code');
+
+        const logs = await this.prisma.accessLog.findMany({
+            where: {
+                userId: user.id,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 1,
+        });
+
+        return logs[0].createdAt.getTime();
+    }
 }

@@ -57,4 +57,10 @@ export class AuthController {
         if (!code) throw new BadRequestException('Code is required');
         return this.authService.updateAdmin(id, code);
     }
+
+    @Get('recent')
+    async recentAccess(@Query('code') code: string) {
+        if (!code) throw new BadRequestException('Code is required');
+        return this.authService.recentAccess(code);
+    }
 }
