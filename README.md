@@ -64,10 +64,14 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+-   Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+-   Website - [https://nestjs.com](https://nestjs.com/)
+-   Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Comment
+
+-   이 레포지토리를 구경하는 모든 분들.., 정말 죄송합니다.. 분명 엄청나게 작은 토이 프로젝트로 시작해서 도메인을 별로 신경 안 썼는데, 개발하다 보니 사람도 붙고 피쳐들이 많이 추가되어서 도메인 분리가 거지같이 되었어요.. 코드 구경하다 눈 버리실 수도 있습니다.. 죄송합니다 ㅠㅠ
