@@ -73,7 +73,11 @@ export class AdminService {
                 'You are not authorized to access this resource',
             );
         }
-        const rawAccessLogs = await this.prisma.accessLog.findMany();
+        const rawAccessLogs = await this.prisma.accessLog.findMany({
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
 
         return Promise.all(
             rawAccessLogs.map(async (log) => {
