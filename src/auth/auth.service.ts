@@ -28,15 +28,15 @@ export class AuthService {
             case DoorStatus.LOCKED:
                 if (user.isAdmin) {
                     this.loggingUser(user, code);
-                    return true;
+                    return { status: true };
                 }
-                return false;
+                return { status: false };
             case DoorStatus.RESTRICTED:
                 this.loggingUser(user, code);
-                return true;
+                return { status: true };
             case DoorStatus.UNLOCKED:
                 this.loggingUser(user, code);
-                return true;
+                return { status: true };
         }
     }
 
