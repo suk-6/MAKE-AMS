@@ -228,6 +228,6 @@ export class AuthService {
             take: 1,
         });
 
-        return logs[0].createdAt.getTime();
+        return { status: true, data: logs[0].createdAt.getTime() };
     }
 }
