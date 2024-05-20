@@ -228,6 +228,9 @@ export class AuthService {
             take: 1,
         });
 
-        return { status: true, data: logs[0].createdAt.getTime() };
+        return {
+            status: true,
+            data: { username: user.name, time: logs[0].createdAt.getTime() },
+        };
     }
 }
