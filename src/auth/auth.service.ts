@@ -218,19 +218,26 @@ export class AuthService {
         const user = await this.getUserById(accessCode.userId);
         if (!user) throw new UnauthorizedException('Invalid code');
 
-        const logs = await this.prisma.accessLog.findMany({
-            where: {
-                userId: user.id,
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-            take: 1,
-        });
+        try {
+            const logs = await this.prisma.accessLog.findMany({
+                where: {
+                    userId: user.id,
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 1,
+            });
 
-        return {
-            status: true,
-            data: { username: user.name, time: logs[0].createdAt.getTime() },
-        };
+            return {
+                status: true,
+                data: {
+                    username: user.name,
+                    time: logs[0].createdAt.getTime(),
+                },
+            };
+        } catch (e) {
+            return { status: false };
+        }
     }
 }
