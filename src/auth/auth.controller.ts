@@ -15,6 +15,7 @@ export class AuthController {
 
     @Get('access')
     async access(@Query('code') code: string | null) {
+        console.log('🚀 ~ AuthController ~ access ~ code:', code);
         if (!code) return this.authService.access();
         return this.authService.accessByCode(code);
     }
