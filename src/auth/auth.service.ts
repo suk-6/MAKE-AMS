@@ -18,6 +18,17 @@ export class AuthService {
         private readonly doorService: DoorService,
     ) {}
 
+    async access() {
+        switch (await this.doorService.getDoorStatus()) {
+            case DoorStatus.LOCKED:
+                return { status: false };
+            case DoorStatus.RESTRICTED:
+                return { status: false };
+            case DoorStatus.UNLOCKED:
+                return { status: true };
+        }
+    }
+
     async accessByCode(code: string) {
         const userId = await this.getUserIdByCode(code);
         if (!userId) throw new BadRequestException('Invalid code');

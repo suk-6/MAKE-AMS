@@ -14,8 +14,8 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Get('access')
-    async access(@Query('code') code: string) {
-        if (!code) throw new BadRequestException('Code is required');
+    async access(@Query('code') code: string | null) {
+        if (!code) return this.authService.access();
         return this.authService.accessByCode(code);
     }
 
