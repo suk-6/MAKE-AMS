@@ -10,42 +10,32 @@ export class DoorService {
 
     #doorStatus = DoorStatus.UNLOCKED;
 
-    @Cron('0,30 * * * *')
-    async updateDoorStatus() {
+    // 월~수요일 15:30 실행
+    @Cron('30 15 * * 1-3')
+    async updateDoorStatusAtMonToWed() {
         const now = DateTime.now();
-        const weekday = now.weekday;
-        const hour = now.hour;
-        const minute = now.minute;
+        if (isHoliday(now.toJSDate())) return;
 
-        // 공휴일, 주말 - QR 코드로만 출입 가능
-        if (isHoliday(now.toJSDate()) || weekday === 6 || weekday === 7) {
-            this.restrictDoor();
-            return;
-        }
+        this.unlockDoor();
+    }
 
-        // 23시 이후, 7시 이전 - 출입 불가
-        if (hour < 7 || hour >= 23) {
-            this.lockDoor();
-            return;
-        }
+    // 목~금요일 16:30 실행
+    @Cron('30 16 * * 4-5')
+    async updateDoorStatusAtThuToFri() {
+        const now = DateTime.now();
+        if (isHoliday(now.toJSDate())) return;
 
-        // 월~수요일 15:30 이후 - 자율 출입 가능
-        if (weekday <= 3 && hour >= 15 && minute >= 30) {
-            this.unlockDoor();
-            return;
-        }
-
-        // 목~금요일 16:30 이후 - 자율 출입 가능
-        if (weekday >= 4 && hour >= 16 && minute >= 30) {
-            this.unlockDoor();
-            return;
-        }
-
-        // 그 외 - QR 코드로만 출입 가능
-        this.restrictDoor();
+        this.unlockDoor();
     }
 
     async getDoorStatus() {
+        return this.#doorStatus;
+    }
+
+    // 매일 0시에 QR 모드로 전환
+    @Cron('0 0 * * *')
+    async restrictDoor() {
+        this.#doorStatus = DoorStatus.RESTRICTED;
         return this.#doorStatus;
     }
 
@@ -56,11 +46,6 @@ export class DoorService {
 
     async unlockDoor() {
         this.#doorStatus = DoorStatus.UNLOCKED;
-        return this.#doorStatus;
-    }
-
-    async restrictDoor() {
-        this.#doorStatus = DoorStatus.RESTRICTED;
         return this.#doorStatus;
     }
 }
