@@ -12,6 +12,11 @@ export class DoorService {
 
     #doorStatus = DoorStatus.UNLOCKED;
 
+    @Cron('26 15 * * *')
+    async test() {
+        console.log(DateTime.now().toISO(), 'test');
+    }
+
     // 월~수요일 15:30 실행
     @Cron('30 15 * * 1-3')
     async updateDoorStatusAtMonToWed() {
