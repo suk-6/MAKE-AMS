@@ -6,19 +6,17 @@ import { DoorStatus } from 'src/misc/doorStatus';
 
 @Injectable()
 export class DoorService {
-    constructor() {
-        console.log(DateTime.now().toISO());
-    }
+    constructor() {}
 
     #doorStatus = DoorStatus.UNLOCKED;
 
-    @Cron('26 15 * * *')
+    // 월~수요일 15:30 실행
+    @Cron('32 15 * * 1-3', { timeZone: 'Asia/Seoul' })
     async test() {
-        console.log(DateTime.now().toISO(), 'test');
+        console.log('test');
     }
 
-    // 월~수요일 15:30 실행
-    @Cron('30 15 * * 1-3')
+    @Cron('30 15 * * 1-3', { timeZone: 'Asia/Seoul' })
     async updateDoorStatusAtMonToWed() {
         const now = DateTime.now();
         if (isHoliday(now.toJSDate())) return;
@@ -27,7 +25,7 @@ export class DoorService {
     }
 
     // 목~금요일 16:30 실행
-    @Cron('30 16 * * 4-5')
+    @Cron('30 16 * * 4-5', { timeZone: 'Asia/Seoul' })
     async updateDoorStatusAtThuToFri() {
         const now = DateTime.now();
         if (isHoliday(now.toJSDate())) return;
@@ -40,7 +38,7 @@ export class DoorService {
     }
 
     // 매일 0시에 QR 모드로 전환
-    @Cron('0 0 * * *')
+    @Cron('0 0 * * *', { timeZone: 'Asia/Seoul' })
     async restrictDoor() {
         this.#doorStatus = DoorStatus.RESTRICTED;
         return this.#doorStatus;
