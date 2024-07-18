@@ -6,7 +6,9 @@ import { DoorStatus } from 'src/misc/doorStatus';
 
 @Injectable()
 export class DoorService {
-    constructor() {}
+    constructor() {
+        console.log(DateTime.now().toISO());
+    }
 
     #doorStatus = DoorStatus.UNLOCKED;
 
