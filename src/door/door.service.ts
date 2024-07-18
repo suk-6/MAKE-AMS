@@ -11,7 +11,7 @@ export class DoorService {
     #doorStatus = DoorStatus.UNLOCKED;
 
     // 월~수요일 15:30 실행
-    @Cron('32 15 * * 1-3', { timeZone: 'Asia/Seoul' })
+    @Cron('33 15 * * *', { timeZone: 'Asia/Seoul' })
     async test() {
         console.log('test');
     }
