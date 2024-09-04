@@ -21,10 +21,13 @@
         "prisma:generate": "node_modules/.bin/prisma generate generate"
     },
     "dependencies": {
+        "@grpc/grpc-js": "^1.11.1",
+        "@grpc/proto-loader": "^0.7.13",
         "@hyunbinseo/holidays-kr": "^3.2025.0",
         "@nestjs/common": "^10.0.0",
         "@nestjs/config": "^3.2.0",
         "@nestjs/core": "^10.0.0",
+        "@nestjs/microservices": "^10.4.1",
         "@nestjs/platform-express": "^10.0.0",
         "@nestjs/schedule": "^4.1.0",
         "@prisma/client": "^5.13.0",
@@ -33,8 +36,10 @@
         "cross-env": "^7.0.3",
         "luxon": "^3.4.4",
         "prisma": "^5.13.0",
+        "protobufts": "^0.3.1",
         "reflect-metadata": "^0.1.13",
-        "rxjs": "^7.8.1"
+        "rxjs": "^7.8.1",
+        "ts-proto": "^2.0.4"
     },
     "devDependencies": {
         "@nestjs/cli": "^10.0.0",
