@@ -213,6 +213,10 @@ export class AuthService {
         });
 
         if (accessCode === null) return { status: false };
+
+        const user = await this.getUserById(accessCode.userId);
+        if (!user.isApproved) return { status: false };
+
         return { status: true };
     }
 
