@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package doorStatus;
+
+service DoorStatusService {
+  rpc GetDoorStatusRpc (DoorStatusRequest) returns (DoorStatusResponse); 
+}
+
+message DoorStatusResponse {
+  enum Status {
+    LOCKED = 0;
+    UNLOCKED = 1;
+    RESTRICTED = 2;
+  }
+
+  Status mode = 1;
+}
+
+message DoorStatusRequest {}
