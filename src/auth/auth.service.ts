@@ -34,6 +34,8 @@ export class AuthService {
         if (!userId) throw new BadRequestException('Invalid code');
         const user = await this.getUserById(userId);
         if (!user) throw new UnauthorizedException('Invalid code');
+        if (!user.isApproved)
+            throw new UnauthorizedException('관리자의 승인이 필요합니다.');
 
         switch (await this.doorService.getDoorStatus()) {
             case DoorStatus.LOCKED:
