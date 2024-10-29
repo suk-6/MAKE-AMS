@@ -10,12 +10,14 @@ import { UserModel } from './auth.models';
 import { registerUserDto } from './auth.dto';
 import { DoorService } from 'src/door/door.service';
 import { DoorStatus } from 'src/misc/doorStatus';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly doorService: DoorService,
+        private readonly configService: ConfigService,
     ) {}
 
     async access() {
@@ -135,7 +137,10 @@ export class AuthService {
     }
 
     async updateAdmin(userId: string, code: string) {
-        if (code === process.env.ADMIN_KEY || (await this.checkAdmin(code))) {
+        if (
+            code === this.configService.get('ADMIN_KEY') ||
+            (await this.checkAdmin(code))
+        ) {
             return await this.prisma.user.update({
                 where: {
                     id: userId,
