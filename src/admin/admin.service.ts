@@ -150,11 +150,7 @@ export class AdminService {
                         expired: false,
                     },
                 })
-                .then((data) => data.map((code) => code.code))
-                .then((data) => {
-                    console.log(data);
-                    return data;
-                }),
+                .then((data) => data.map((code) => code.code)),
         };
     }
 }
