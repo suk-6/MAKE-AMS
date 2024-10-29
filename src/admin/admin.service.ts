@@ -141,7 +141,7 @@ export class AdminService {
         }
 
         return {
-            codes: this.prisma.accessCode
+            codes: await this.prisma.accessCode
                 .findMany({
                     select: {
                         code: true,

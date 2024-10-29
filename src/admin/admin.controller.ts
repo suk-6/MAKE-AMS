@@ -50,8 +50,6 @@ export class AdminController {
 
     @Get('code-list')
     async getCodeList(@Query('admin') adminCode: string) {
-        const data = this.adminService.getCodeList(adminCode);
-        console.log(data);
-        return data;
+        return this.adminService.getCodeList(adminCode);
     }
 }
