@@ -3,6 +3,7 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from 'src/auth/auth.service';
 import { DoorService } from 'src/door/door.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,6 +14,7 @@ export class AdminService {
         private readonly prisma: PrismaService,
         private readonly authService: AuthService,
         private readonly doorService: DoorService,
+        private readonly configService: ConfigService,
     ) {}
 
     async getPendings(code: string) {
@@ -131,5 +133,24 @@ export class AdminService {
 
         await this.doorService.restrictDoor();
         return { status: true };
+    }
+
+    async getCodeList(adminCode: string) {
+        if (this.configService.get('ADMIN_KEY') !== adminCode) {
+            throw new UnauthorizedException('Invalid admin code');
+        }
+
+        return {
+            codes: this.prisma.accessCode
+                .findMany({
+                    select: {
+                        code: true,
+                    },
+                    where: {
+                        expired: false,
+                    },
+                })
+                .then((data) => data.map((code) => code.code)),
+        };
     }
 }

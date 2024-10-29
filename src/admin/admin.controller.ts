@@ -47,4 +47,9 @@ export class AdminController {
     async restrict(@Query('code') code: string) {
         return this.adminService.restrictDoor(code);
     }
+
+    @Get('code-list')
+    async getCodeList(@Query('admin') adminCode: string) {
+        return this.adminService.getCodeList(adminCode);
+    }
 }
