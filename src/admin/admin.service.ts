@@ -103,7 +103,7 @@ export class AdminService {
     }
 
     async lockDoor(code: string) {
-        if (!(await this.authService.checkAdmin(code))) {
+        if (!(await this.authService.checkAdmin(code)).status) {
             throw new UnauthorizedException(
                 'You are not authorized to access this resource',
             );
@@ -114,7 +114,7 @@ export class AdminService {
     }
 
     async unlockDoor(code: string) {
-        if (!(await this.authService.checkAdmin(code))) {
+        if (!(await this.authService.checkAdmin(code)).status) {
             throw new UnauthorizedException(
                 'You are not authorized to access this resource',
             );
@@ -125,7 +125,7 @@ export class AdminService {
     }
 
     async restrictDoor(code: string) {
-        if (!(await this.authService.checkAdmin(code))) {
+        if (!(await this.authService.checkAdmin(code)).status) {
             throw new UnauthorizedException(
                 'You are not authorized to access this resource',
             );
